@@ -4,6 +4,9 @@ package database;
 import java.sql.Statement;
 import java.sql.Time;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,7 +16,7 @@ import java.sql.SQLException;
 public class JDBC {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost:3306/qb_tutorials";
+	static final String DB_URL = "jdbc:mysql://localhost:3306/qb_tutorials?autoReconnect=true&useSSL=false";
 	static final String USER = "root";
 	static final String PASS = "password";
 	static Connection conn = null;
@@ -203,8 +206,9 @@ public class JDBC {
 		System.out.println(sql);
 	}
 
-	public static String read(ArrayList<String> fields, String table, String whereField, String whereOperator,String whereFieldValue) {
+	public static JSONArray read(ArrayList<String> fields, String table, String whereField, String whereOperator,String whereFieldValue) {
         ResultSet rs = null;
+        JSONArray ja = null;
         
 		System.out.println("Creating statement...");
 		try {
@@ -220,7 +224,6 @@ public class JDBC {
 			
 		sql2 += fields.get(i) +", ";
 			
-			
 		}
 		sql2 += fields.get(fields.size() - 1);
 		if (whereField.equals("")==false) {
@@ -230,12 +233,23 @@ public class JDBC {
 		else {
 			sql2 += " FROM " +table;
 		}
+		
+		
+		if (fields.size() == 1) {
+			
+			sql2 = "SELECT " + fields.get(0) + " FROM " + table + " WHERE " + whereField + " "+ whereOperator + " " + whereFieldValue;
+		}
+		
 		System.out.println(sql2);
 		
 		
 		try {
 			rs = stmt.executeQuery(sql2);
+			ja = Convertor.convertResultSetIntoJSON(rs);
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -254,7 +268,9 @@ public class JDBC {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		
 		}
+		
 		try {
 			rs.close();
 		} catch (SQLException e) {
@@ -262,7 +278,8 @@ public class JDBC {
 			e.printStackTrace();
 		}
 		System.out.println(selected);
-		return selected;
+		return ja;
+		
 	}
 	
 	public static void update(String field, String table, String edit, String whereField, String whereOperator,String whereFieldValue) {
@@ -286,6 +303,7 @@ public class JDBC {
 	}
 
     public static void delete(String table, String whereField, String whereOperator, String whereFieldValue) {
+    	
     	System.out.println("Creating statement...");
     	try {
 			stmt= conn.createStatement();
@@ -303,7 +321,54 @@ public class JDBC {
 	}
        
     }
+    
+    public static JSONArray getQuestions(int questionLineID) {
+        ResultSet rs = null;
+        JSONArray ja = null;
+        
+		try {
+			stmt= conn.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		String sql2 = "SELECT test_questions.question, test_questions.question_id, question_line.question_line_id, test_questions.answer\r\n" + 
+				"FROM test_questions\r\n" + 
+				"JOIN question_line\r\n" + 
+				"ON test_questions.question_id = question_line.question_id\r\n" + 
+				"WHERE question_line_id = "+ questionLineID + ";";
+		
+		
+		
+		try {
+			rs = stmt.executeQuery(sql2);
+			ja = Convertor.convertResultSetIntoJSON(rs);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+		try {
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return ja;
+		
+	}
 }
+
+
+
+
 
 
 

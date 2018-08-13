@@ -1,7 +1,10 @@
 package database;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import org.json.JSONArray;
 
 public class DBMain {
 	
@@ -9,12 +12,7 @@ public class DBMain {
 		
 		JDBC.accessDB();
 		
-		ArrayList<String> tutors = new ArrayList<>();
-		tutors.add("tutor_id");
-		tutors.add("first_name");
-		tutors.add("last_name");
-		tutors.add("speciality");
-		
+
 		
 		ArrayList<String> tests = new ArrayList<>();
 		
@@ -30,16 +28,9 @@ public class DBMain {
 		
 		ArrayList<String> testQuestions = new ArrayList<>();
 		testQuestions.add("question");
-		
-		
-		
 
-
-
-
-		JDBC.read(tests, "test", "topic = " + "'" + "addition" + "' AND " + "difficulty = " + "'" + "hard" +"' AND " + "level = " + "'" + "GCSE"+"';", "", "");
 	
-		
+	    
 		Scanner sc = new Scanner(System.in);
 	    
 		String ID = null;
@@ -87,20 +78,34 @@ public class DBMain {
 	    	}
 	    	} while (level.equals("Please enter a correct response"));
 	    	
-	    	ID = JDBC.read(tests, "test", "topic = " + "'" + topic + "' AND " + "difficulty = " + "'" + difficulty+"' AND " + "level = " + "'" + level+"';", "", "");
+	    	ID = JDBC.read(tests, "test", "topic = " + "'" + topic + "' AND " + "difficulty = " + "'" + difficulty+"' AND " + "level = " + "'" + level+"';", "", "").toString();
 	    	int ID1 = Test.firstInt(ID);
 	    	String ID2 = Integer.toString(ID1);
 
-	    	System.out.println(ID2);
-	    	
-	    	String QL = JDBC.read(questionLine, "test", "test_id", "=", ID2);
 	    	int QL1 = Test.firstInt(ID);
-	    	String QL2 = Integer.toString(ID1);
+	    	int score = 0;
+	    	
+	    	for (int i = 0; i < JDBC.getQuestions(QL1).length(); i++) {
+	    	System.out.println(JDBC.getQuestions(QL1).getJSONObject(i).get("question"));
+	    	ans = sc.nextLine();
+	    	
+	    	if (ans.equals(JDBC.getQuestions(QL1).getJSONObject(i).get("answer"))) {
+	    		System.out.println("Correct");
+	    		score++;
+	    	}
+	    	else {
+	    		System.out.println("Incorrect");
+	    	}
+	    	
+	    	}
+	    	
+	    	System.out.println("You received a score of " + score);
+	    	break;
 	    	
 
-	    	
-	    	
 	    }
+	    
+	    sc.close();
 	     
 	     
 		
