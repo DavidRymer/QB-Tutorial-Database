@@ -5,9 +5,7 @@ import org.json.JSONObject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
+
 
 /**
  * Utility for converting ResultSets into some Output formats

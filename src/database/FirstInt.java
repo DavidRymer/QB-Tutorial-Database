@@ -1,6 +1,6 @@
 package database;
 
-public class Test {
+public class FirstInt {
 	
 	public static int firstInt(String string) { 
 		
@@ -9,9 +9,7 @@ public class Test {
 		int j = i;
 		while (j < string.length() && Character.isDigit(string.charAt(j))) j++;
 		return Integer.parseInt(string.substring(i, j));
-		
-		
-		
+
 	}
 
 }
